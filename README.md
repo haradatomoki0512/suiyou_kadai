@@ -2,20 +2,40 @@
 
 本手順書は、初期状態の Amazon Linux 2023 (EC2インスタンス) 上に、Dockerを用いて画像投稿可能なWeb掲示板を構築するためのCLI操作手順です。
 
-## 1. 前提パッケージのインストールとDockerの起動
+## 1. 前提パッケージのインストールと各種設定
 
-EC2インスタンスにSSHログインした直後の初期状態から、Git、Docker、およびscreenをインストールし、サービスを起動します。
+Git、Docker、便利なエディタ（vim）、バックグラウンド作業用（screen）をインストールし、必要なプラグインの導入とサービス起動を行います。
 
 ```bash
+# パッケージのインストール
 sudo dnf update -y
-sudo dnf install -y git docker screen
+sudo dnf install -y git docker screen vim
+
+# Dockerの起動と権限設定
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -aG docker ec2-user
+
+# Docker Composeのインストール
+sudo mkdir -p /usr/local/lib/docker/cli-plugins
+sudo curl -SL [https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64](https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64) -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+# Buildxのインストール（ビルド時のエラー防止対策）
+mkdir -p ~/.docker/cli-plugins
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+BUILDX_URL=$(curl -s [https://api.github.com/repos/docker/buildx/releases/latest](https://api.github.com/repos/docker/buildx/releases/latest) | grep "browser_download_url.*linux-$ARCH" | cut -d '"' -f 4)
+curl -L $BUILDX_URL -o ~/.docker/cli-plugins/docker-buildx
+chmod +x ~/.docker/cli-plugins/docker-buildx
 ```
 
 > [!IMPORTANT]
-> `ec2-user` へのDockerグループ追加を反映させるため、**ここで一度 `exit` でSSH接続を切断し、再度EC2にSSHログインし直してください。**
+> `ec2-user` へのDockerグループ追加を反映させるため、**ここで一度 `exit` でSSH接続を切断し、再度EC2にログインし直してください。**
+
+> [!TIP]
+> **エディタ・ツールのカスタマイズ（任意）**
+> - **vim:** `vim ~/.vimrc` で設定ファイルを作成し、授業で習ったおすすめ設定を記述できます。
+> - **screen:** `vim ~/.screenrc` で設定ファイルを作成し、ステータスバーの表示などをカスタマイズできます。
 
 ## 2. リポジトリのクローン
 
@@ -47,15 +67,15 @@ docker compose up
 
 > [!TIP]
 > **screenの基本操作（別画面での作業）**
-> 今回は `-d` を外しているため、起動後は画面にログが流れ続けます。次の作業（データベース設定など）を行う場合は、以下の操作で新しいウィンドウを開いてください。
+> 起動後は画面にログが流れ続けます。次のデータベース設定を行う場合は、以下の操作で新しいウィンドウを開いて作業してください。
 > - 新しいウィンドウを開く: `Ctrl` + `a` の後に `c`
 > - 次のウィンドウに移動: `Ctrl` + `a` の後に `n`
 > - 前のウィンドウに移動: `Ctrl` + `a` の後に `p`
 
 ## 4. データベースの初期設定
 
-（※ログが流れている画面とは別のscreenウィンドウなどで実行してください）
-掲示板のデータを保存するテーブルを作成します。
+（※ログが流れている画面とは別のscreenウィンドウで実行してください）
+掲示板のデータを保存するテーブルを作成します。画像保存用のカラム（`image_filename`）も最初から含めて作成します。
 
 1. 以下のコマンドで、起動中のMySQLコンテナに接続します。
 ```bash
