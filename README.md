@@ -1,25 +1,34 @@
 # 掲示板Webアプリケーション 構築手順書
 
-本手順書は、初期状態の Amazon Linux 2023 (EC2インスタンス) 上に、Dockerを用いて画像投稿可能なWeb掲示板を構築するためのCLI操作手順です。
-
 ## 1. 前提パッケージのインストールと各種設定
 
 Git、Docker、便利なエディタ（vim）、バックグラウンド作業用（screen）をインストールし、必要なプラグインの導入とサービス起動を行います。
 
 ```bash
-# パッケージのインストール
-sudo dnf update -y
-sudo dnf install -y git docker screen vim
-
-# Dockerの起動と権限設定
+sudo yum install git -y
+```
+gitをインストールします
+ 
+```bash
+sudo yum install -y docker
 sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker ec2-user
-
-# Docker Composeのインストール
-mkdir -p ~/.docker/cli-plugins
-curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
-chmod +x ~/.docker/cli-plugins/docker-compose
+```
+dockerをインストールと起動をします
+ 
+```bash
+sudo usermod -a -G docker ec2-user
+exit
+```
+ec2-userに権限を与えて反映させます
+ 
+ 
+```bash
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+curl -SL https://github.com/docker/compose/releases/download/v5.1.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+```
+docker composeをインストールします
 
 # Buildxのインストール（ビルド時のエラー防止対策）
 mkdir -p ~/.docker/cli-plugins
