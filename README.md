@@ -4,11 +4,11 @@
 
 ## 1. 前提パッケージのインストールとDockerの起動
 
-EC2インスタンスにSSHログインした直後の初期状態から、GitとDockerをインストールし、サービスを起動します。
+EC2インスタンスにSSHログインした直後の初期状態から、Git、Docker、およびscreenをインストールし、サービスを起動します。
 
 ```bash
 sudo dnf update -y
-sudo dnf install -y git docker
+sudo dnf install -y git docker screen
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -aG docker ec2-user
@@ -22,18 +22,31 @@ sudo usermod -aG docker ec2-user
 再ログイン後、作業ディレクトリに本リポジトリをクローンし、ディレクトリ内に移動します。
 
 ```bash
-git clone https://github.com/haradatomoki0512/suiyou_kadai.git
+git clone [https://github.com/haradatomoki0512/suiyou_kadai.git](https://github.com/haradatomoki0512/suiyou_kadai.git)
 cd suiyou_kadai
 ```
 
 ## 3. コンテナのビルドと起動
 
-Docker Composeを用いて、Nginx、PHP、MySQLのコンテナ環境をビルドおよびバックグラウンドで起動します。
+screenを起動し、Docker Composeを用いてNginx、PHP、MySQLのコンテナ環境をビルドおよびバックグラウンドで起動します。
 
+1. screenを起動します。
+```bash
+screen
+```
+
+2. コンテナをビルド・起動します。
 ```bash
 docker compose up -d --build
 ```
 ※起動完了後、`docker compose ps` で3つのコンテナが正常に稼働しているか確認してください。
+
+> [!TIP]
+> **screenの基本操作**
+> - デタッチ: `Ctrl` + `a` を押した後に `d`
+> - アタッチ: `screen -r`
+> - 強制デタッチ＆アタッチ: `screen -r -d`
+> - セッション一覧の確認: `screen -ls`
 
 ## 4. データベースの初期設定
 
