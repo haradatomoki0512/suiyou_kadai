@@ -3,11 +3,6 @@
 ## 1. 前提パッケージのインストールと各種設定
 
 Git、Docker、便利なエディタ（vim）、バックグラウンド作業用（screen）をインストールし、必要なプラグインの導入とサービス起動を行います。
-
-```bash
-sudo yum install git -y
-```
-gitをインストールします
  
 ```bash
 sudo yum install -y docker
@@ -30,21 +25,11 @@ chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 ```
 docker composeをインストールします
 
-# Buildxのインストール（ビルド時のエラー防止対策）
-mkdir -p ~/.docker/cli-plugins
-ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-BUILDX_URL=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep "browser_download_url.*linux-$ARCH" | cut -d '"' -f 4)
-curl -L $BUILDX_URL -o ~/.docker/cli-plugins/docker-buildx
-chmod +x ~/.docker/cli-plugins/docker-buildx
+```bash
+sudo yum install git -y
 ```
+gitをインストールします
 
-> [!IMPORTANT]
-> `ec2-user` へのDockerグループ追加を反映させるため、**ここで一度 `exit` でSSH接続を切断し、再度EC2にログインし直してください。**
-
-> [!TIP]
-> **エディタ・ツールのカスタマイズ（任意）**
-> - **vim:** `vim ~/.vimrc` で設定ファイルを作成し、授業で習ったおすすめ設定を記述できます。
-> - **screen:** `vim ~/.screenrc` で設定ファイルを作成し、ステータスバーの表示などをカスタマイズできます。
 
 ## 2. リポジトリのクローン
 
@@ -64,15 +49,13 @@ screenを起動し、Docker Composeを用いてNginx、PHP、MySQLのコンテ�
 screen
 ```
 
-2. コンテナをビルドします。
+2. コンテナを起動します。
 ```bash
-docker compose build
+mkdir -p ~/.docker/cli-plugins/
+curl -SL https://github.com/docker/buildx/releases/download/v0.17.1/buildx-v0.17.1.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
+chmod +x ~/.docker/cli-plugins/docker-buildx
 ```
-
-3. コンテナを起動します。
-```bash
-docker compose up
-```
+docker compose upができない場合は上記を実行してください
 
 > [!TIP]
 > **screenの基本操作（別画面での作業）**
@@ -88,7 +71,7 @@ docker compose up
 
 1. 以下のコマンドで、起動中のMySQLコンテナに接続します。
 ```bash
-docker compose exec mysql mysql -u root example_db
+docker compose exec mysql mysql example_db
 ```
 
 2. MySQLのプロンプト（`mysql>`）が表示されたら、以下のSQLを実行してテーブルを作成します。
