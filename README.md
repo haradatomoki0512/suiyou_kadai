@@ -42,7 +42,7 @@ chmod +x ~/.docker/cli-plugins/docker-buildx
 再ログイン後、作業ディレクトリに本リポジトリをクローンし、ディレクトリ内に移動します。
 
 ```bash
-git clone [https://github.com/haradatomoki0512/suiyou_kadai.git](https://github.com/haradatomoki0512/suiyou_kadai.git)
+git clone https://github.com/haradatomoki0512/suiyou_kadai.git
 cd suiyou_kadai
 ```
 
