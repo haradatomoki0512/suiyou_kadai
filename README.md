@@ -17,14 +17,14 @@ sudo systemctl enable docker
 sudo usermod -aG docker ec2-user
 
 # Docker Composeのインストール
-sudo mkdir -p /usr/local/lib/docker/cli-plugins
-sudo curl -SL [https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64](https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64) -o /usr/local/lib/docker/cli-plugins/docker-compose
-sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+mkdir -p ~/.docker/cli-plugins
+curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+chmod +x ~/.docker/cli-plugins/docker-compose
 
 # Buildxのインストール（ビルド時のエラー防止対策）
 mkdir -p ~/.docker/cli-plugins
 ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-BUILDX_URL=$(curl -s [https://api.github.com/repos/docker/buildx/releases/latest](https://api.github.com/repos/docker/buildx/releases/latest) | grep "browser_download_url.*linux-$ARCH" | cut -d '"' -f 4)
+BUILDX_URL=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep "browser_download_url.*linux-$ARCH" | cut -d '"' -f 4)
 curl -L $BUILDX_URL -o ~/.docker/cli-plugins/docker-buildx
 chmod +x ~/.docker/cli-plugins/docker-buildx
 ```
