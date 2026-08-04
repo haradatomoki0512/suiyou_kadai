@@ -15,6 +15,8 @@ sudo usermod -a -G docker ec2-user
 exit
 ```
 ec2-userに権限を与えて反映させます
+
+再ログインをしてもらいます
  
  
 ```bash
