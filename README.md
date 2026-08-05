@@ -54,15 +54,15 @@ screen
 2. コンテナを起動します。
 
 ```bash
-docker compose up
-```
-
-```bash
 mkdir -p ~/.docker/cli-plugins/
 curl -SL https://github.com/docker/buildx/releases/download/v0.17.1/buildx-v0.17.1.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
 chmod +x ~/.docker/cli-plugins/docker-buildx
 ```
-docker compose upができない場合は上記を実行してください
+
+```bash
+docker compose up
+```
+
 
 > [!TIP]
 > **screenの基本操作（別画面での作業）**
